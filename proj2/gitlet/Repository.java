@@ -2,6 +2,7 @@ package gitlet;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import static gitlet.Utils.*;
 
@@ -33,6 +34,7 @@ public class Repository {
         GITLET_DIR.mkdir();
         Blob.makeBlobDir();
         Commit.makeCommitDir();
+        Stage.makeStagingDir();
     }
     public void init() throws IOException {
         if(GITLET_DIR.exists())
@@ -43,6 +45,21 @@ public class Repository {
         makeDir();
         Commit initCommit=new Commit();
         initCommit.createCommitFile();
+    }
+    public void addoneFile(File file) throws IOException{
+        Blob blob=new Blob(file);
+        blob.makeBlobFile(Stage.STAGE_DIR);
+        Stage.addblob(blob);
+    }
+    public void add(List<File> files) throws IOException {
+        for(File file:files)
+        {
+            addoneFile(file);
+        }
+    }
+    public void commit(String message)
+    {
 
     }
+
 }
