@@ -1,6 +1,8 @@
 package gitlet;
 
 import java.io.File;
+import java.io.IOException;
+
 import static gitlet.Utils.*;
 
 // TODO: any imports you need here
@@ -26,4 +28,21 @@ public class Repository {
     public static final File GITLET_DIR = join(CWD, ".gitlet");
 
     /* TODO: fill in the rest of this class. */
+    private static void makeDir()
+    {
+        GITLET_DIR.mkdir();
+        Blob.makeBlobDir();
+        Commit.makeCommitDir();
+    }
+    public void init() throws IOException {
+        if(GITLET_DIR.exists())
+        {
+           throw new RuntimeException(
+                   String.format("A Gitlet version-control system already exists in the current directory."));
+        }
+        makeDir();
+        Commit initCommit=new Commit();
+        initCommit.createCommitFile();
+
+    }
 }

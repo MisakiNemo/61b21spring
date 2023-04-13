@@ -14,34 +14,24 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     @Override
     public void clear() {
-
+        buckets= createTable(DEFAULT_INITIAL_SIZE);
+        size=0;
     }
 
     @Override
     public boolean containsKey(K key) {
-        return containsKey(key,getIndex(key));
-    }
-    private boolean containsKey(K key,int index)
-    {
-        return get(key,index)==null;
+        return getNode(key)!=null;
     }
 
     @Override
     public V get(K key) {
-        return get(key,getIndex(key));
+        Node node=getNode(key);
+        if(node==null)
+        {
+            return null;
+        }
+        return node.value;
     }
-    private V get(K key,int bucketIndex)
-    {
-          for(Node node:buckets[bucketIndex])
-          {
-              if(node.key==key)
-              {
-                  return node.value;
-              }
-          }
-          return null;
-    }
-
     @Override
     public int size() {
         return size;
@@ -56,7 +46,6 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
             node.value=value;
             return;
         }
-
         buckets[bucketIndex].add(createNode(key,value));
         ++size;
         if(biggerThanmaxLoadFactor())
@@ -68,7 +57,11 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     @Override
     public Set<K> keySet() {
-        return null;
+        HashSet<K> set=new HashSet<>();
+        for(K key:this){
+            set.add(key);
+        }
+        return set;
     }
 
     @Override
@@ -87,15 +80,14 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     @Override
     public V remove(K key, V value) {
-        if(get(key)==value)
-        {
-            remove(key);
-            --size;
-            return value;
+        int bucketIndex=getIndex(key);
+        Node node=getNode(key,bucketIndex);
+        if(node==null||node.value.equals(value)){
+            return null;
         }
-        else{
-            return get(key);
-        }
+        --size;
+        buckets[bucketIndex].remove(node);
+        return node.value;
     }
 
     @Override
@@ -117,7 +109,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     private  class  MyHashMapNodeIterator implements Iterator<Node>{
         private  final Iterator<Collection<Node>> bucketsIterator= Arrays.stream(buckets).iterator();
         private  Iterator<Node> curentBucketItorator;
-        private int nodeLeft=size();
+        private int nodeLeft=size;
         @Override
         public boolean hasNext() {
                return nodeLeft>0;
@@ -125,7 +117,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
         @Override
         public Node next() {
-            if(curentBucketItorator==null||bucketsIterator.hasNext())
+            if(curentBucketItorator==null||!curentBucketItorator.hasNext())
             {
                 Collection<Node> currentBucket=bucketsIterator.next();
                 while(currentBucket.size()==0)
@@ -211,7 +203,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * OWN BUCKET DATA STRUCTURES WITH THE NEW OPERATOR!
      */
     protected Collection<Node> createBucket() {
-        return null;
+        return new LinkedList<>();
     }
 
     /**
@@ -223,8 +215,9 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      *
      * @param tableSize the size of the table to create
      */
+    @SuppressWarnings("unchecked")
     private Collection<Node>[] createTable(int tableSize) {
-        Collection<Node>[] table= (Collection[]) new Object[tableSize];
+        Collection<Node>[] table=  new Collection[tableSize];
         for (int i = 0; i < tableSize; i++) {
            table[i]=createBucket();
         }
@@ -244,9 +237,13 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     }
     private  Node getNode(K key,int bucketIndex)
     {
+        if(buckets[bucketIndex]==null)
+        {
+            return null;
+        }
         for(Node node:buckets[bucketIndex])
         {
-            if(node.key==key)
+            if(node.key.equals(key))
             {
                 return node;
             }
