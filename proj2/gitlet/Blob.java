@@ -9,7 +9,7 @@ public class Blob implements Serializable {
     private  String refs;
     private byte[] content;
     private String ID;
-    private static final File BLOB_DIR=join(Repository.GITLET_DIR,"Blob");
+    public static final File BLOB_DIR=join(Repository.GITLET_DIR,"Blob");
     public  static void makedir()
     {
         BLOB_DIR.mkdir();

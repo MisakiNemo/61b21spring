@@ -34,6 +34,7 @@ public class Commit implements Serializable {
     public static final File COMMIT_DIR=join(Repository.GITLET_DIR,"Commit");
     private HashSet<String> parentHashCodes;
     private HashSet<String> blobCodes;
+    private String timeStamp;
     public static void makeCommitDir()
     {
         COMMIT_DIR.mkdir();
@@ -44,6 +45,7 @@ public class Commit implements Serializable {
         parentHashCodes=new HashSet<>();
         blobCodes=new HashSet<>();
         ID=sha1(message,curTime,parentHashCodes,blobCodes);
+        timeStamp=timeToStamp(curTime);
     }
     public Commit(String message,HashSet<String> parentHashCodes,HashSet<String> blobCodes)
     {
@@ -52,6 +54,10 @@ public class Commit implements Serializable {
         this.parentHashCodes=parentHashCodes;
         this.blobCodes=blobCodes;
         this.ID=generateID();
+    }
+
+    public String getTimeStamp() {
+        return timeStamp;
     }
 
     public String getMessage() {

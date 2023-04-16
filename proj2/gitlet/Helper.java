@@ -6,6 +6,14 @@ import static gitlet.Utils.*;
 
 public class Helper {
     //Blob
+    public static void cutAddBlobsToBlobDir()
+    {
+        File[] files=AddStage.STAGE_DIR.listFiles();
+        for(File file:files)
+        {
+            file.renameTo(Blob.BLOB_DIR);
+        }
+    }
 
 
 
@@ -20,6 +28,16 @@ public class Helper {
             return null;
         }
         return readObject(file, Commit.class);
+    }
+    public static LinkedList<Commit> getAllCommit()
+    {
+        File[] files=Commit.COMMIT_DIR.listFiles();
+        LinkedList<Commit> commits=new LinkedList<>();
+        for(File file:files)
+        {
+            commits.add(readObject(file,Commit.class));
+        }
+        return  commits;
     }
 
 
