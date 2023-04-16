@@ -45,6 +45,9 @@ public class Repository {
         makeDir();
         Commit initCommit=new Commit();
         initCommit.createCommitFile();
+        HEAD= initCommit.getID();
+        Branch branch=new Branch("master",HEAD,true);
+        branchHash.put("master",initCommit.getID());
     }
     public static void add(List<File> files) throws IOException {
         for(File file:files)
@@ -60,12 +63,33 @@ public class Repository {
             AddStage.addblob(blob.getRefs());
         }
     }
-    private static Commit generateCommit(String message)
-    {
-        HashSet
+    private static Commit generateCommit(String message) throws IOException {
+        HashSet<String> blobIDs=new HashSet<>();
+        blobIDs.addAll(Helper.getCommitByID(HEAD).getBlobCodes());
+        blobIDs.addAll(AddStage.getFile_IDMap().keySet());
+        AddStage.clear();
+        HashSet<String> parentID=new HashSet<>();
+        parentID.add(HEAD);
+        Commit commit=new Commit(message,parentID,blobIDs);
+        commit.createCommitFile();
+        branchHash.put(HEAD,commit.getID());
+        HEAD=commit.getID();
+
     }
-    public static void  rm(File file)
+    public static void  rm(List<File> files)
     {
+        for(File file:files)
+        {
+            if(!file.exists())
+            {
+                throw new RuntimeException("File does not exist");
+            }
+            Blob blob=new Blob(file);
+            if(AddStage.isContain(blob.getRefs())){
+                continue;
+            }
+            RemoveStage.addblob(blob.getRefs());
+        }
 
     }
     public static void find(String message){}

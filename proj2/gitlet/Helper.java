@@ -12,7 +12,7 @@ public class Helper {
 
 
     //Commit
-    public Commit getCommitByID(String ID)
+    public static Commit getCommitByID(String ID)
     {
         File file=join(Commit.COMMIT_DIR,ID);
         if(!file.exists())

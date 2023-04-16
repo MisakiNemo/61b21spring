@@ -9,6 +9,11 @@ import static gitlet.Utils.join;
 public class AddStage {
     public static HashMap<String,String> file_IDMap  = new HashMap<>();// 存储要添加的 Blob 对象的链表
     public static final File STAGE_DIR = join(Repository.GITLET_DIR, "AddStage"); // 存储要添加的 Blob 对象的文件夹
+
+    public static HashMap<String, String> getFile_IDMap() {static
+        return file_IDMap;
+    }
+
     public static void addblob(String refs) throws IOException {
         File file=join(Repository.CWD,refs);
         Blob blob=new Blob(file);
