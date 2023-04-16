@@ -44,7 +44,7 @@ public class Commit implements Serializable {
         curTime=new Date(0);
         parentHashCodes=new HashSet<>();
         blobCodes=new HashSet<>();
-        ID=sha1(message,curTime,parentHashCodes,blobCodes);
+        ID=generateID();
         timeStamp=timeToStamp(curTime);
     }
     public Commit(String message,HashSet<String> parentHashCodes,HashSet<String> blobCodes)
@@ -91,7 +91,7 @@ public class Commit implements Serializable {
         return dateFormat.format(date);
     }
     private String generateID(){
-        return sha1(message,timeToStamp(curTime),parentHashCodes,blobCodes);
+        return sha1(message,timeToStamp(curTime),parentHashCodes.toString(),blobCodes.toString());
     }
 
 

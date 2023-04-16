@@ -29,8 +29,8 @@ public class Repository {
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
     public static  String HEAD;
-    public static Map<String,String> branchHash;
-    public static  HashSet<Branch> branch;
+    public static Map<String,String> branchHash=new HashMap<>();
+    public static  HashSet<Branch> branch=new HashSet<>();
     private static void makeDir(){
         GITLET_DIR.mkdir();
         Commit.makeCommitDir();
@@ -41,10 +41,10 @@ public class Repository {
     }
     /* TODO: fill in the rest of this class. */
     public static void init() throws IOException {
-        if(GITLET_DIR.exists())
+        /*if(GITLET_DIR.exists())
         {
             throw new RuntimeException("A Gitlet version-control system already exists in the current directory.");
-        }
+        }*/
         makeDir();
         Commit initCommit=new Commit();
         initCommit.createCommitFile();
