@@ -130,7 +130,7 @@ public class Repository {
             {
                 System.out.println("Merged development into "+branchHash.get(HEAD)+".");
             }
-            curCcommit=Helper.getCommitByID(curCcommit.getParentHashCodes().);
+            curCcommit=Helper.getCommitByID(Helper.getHashSetFirstItem(curCcommit.getParentHashCodes()));
         }
     }
     public static void global_log(){

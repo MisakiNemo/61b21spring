@@ -52,6 +52,10 @@ public class Helper {
         }
         return branchHash;
     }
-
+    public static String getHashSetFirstItem(HashSet<String> hashset)
+    {
+            ArrayList<String> array=new ArrayList<>(hashset);
+            return array.get(0);
+    }
 
 }
