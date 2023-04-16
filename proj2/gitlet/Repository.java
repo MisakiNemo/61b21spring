@@ -1,10 +1,9 @@
 package gitlet;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
-import static gitlet.Utils.*;
+import static gitlet.Utils.join;
 
 // TODO: any imports you need here
 
@@ -27,39 +26,58 @@ public class Repository {
     public static final File CWD = new File(System.getProperty("user.dir"));
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
-
-    /* TODO: fill in the rest of this class. */
-    private static void makeDir()
-    {
+    public static  String HEAD;
+    public static HashMap<String,String> branchHash;
+    private static void makeDir(){
         GITLET_DIR.mkdir();
-        Blob.makeBlobDir();
         Commit.makeCommitDir();
-        Stage.makeStagingDir();
+        Branch.makedir();
+        Blob.makedir();
+        AddStage.STAGE_DIR.mkdir();
+        RemoveStage.STAGE_DIR.mkdir();
     }
-    public void init() throws IOException {
+    /* TODO: fill in the rest of this class. */
+    public static void init() throws IOException {
         if(GITLET_DIR.exists())
         {
-           throw new RuntimeException(
-                   String.format("A Gitlet version-control system already exists in the current directory."));
+            throw new RuntimeException("A Gitlet version-control system already exists in the current directory.");
         }
         makeDir();
         Commit initCommit=new Commit();
         initCommit.createCommitFile();
     }
-    public void addoneFile(File file) throws IOException{
-        Blob blob=new Blob(file);
-        blob.makeBlobFile(Stage.STAGE_DIR);
-        Stage.addblob(blob);
-    }
-    public void add(List<File> files) throws IOException {
+    public static void add(List<File> files) throws IOException {
         for(File file:files)
         {
-            addoneFile(file);
+            if(!file.exists())
+            {
+                throw new RuntimeException("File does not exist");
+            }
+            Blob blob=new Blob(file);
+            if(AddStage.isContain(blob.getRefs())){
+                continue;
+            }
+            AddStage.addblob(blob.getRefs());
         }
     }
-    public void commit(String message)
+    private static Commit generateCommit(String message)
+    {
+        HashSet
+    }
+    public static void  rm(File file)
     {
 
     }
+    public static void find(String message){}
 
+    public static void log(){}
+    public static void global_log(){}
+
+    public static void status()
+    {
+    }
+    public static void checkout()
+    {}
+    public static  void reset(){}
+    public static void merge(){}
 }

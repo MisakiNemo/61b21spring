@@ -7,10 +7,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static gitlet.Utils.*;
 
@@ -30,13 +27,13 @@ public class Commit implements Serializable {
      */
 
     /** The message of this Commit. */
-    public static  final File COMMIT_DIR=join(Repository.GITLET_DIR,"Commit");
     private String message;
-    private String HashCode;
+    private String ID;
     /* TODO: fill in the rest of this class. */
     private Date curTime;
-    private List<String> parentHashCodes;
-    private List<String> blobCodes;
+    public static final File COMMIT_DIR=join(Repository.GITLET_DIR,"Commit");
+    private HashSet<String> parentHashCodes;
+    private HashSet<String> blobCodes;
     public static void makeCommitDir()
     {
         COMMIT_DIR.mkdir();
@@ -44,39 +41,42 @@ public class Commit implements Serializable {
     public  Commit(){
         message="init commit";
         curTime=new Date(0);
-        parentHashCodes=new LinkedList<>();
-        blobCodes=new LinkedList<>();
-        HashCode=sha1(message,curTime,parentHashCodes,blobCodes);
+        parentHashCodes=new HashSet<>();
+        blobCodes=new HashSet<>();
+        ID=sha1(message,curTime,parentHashCodes,blobCodes);
     }
-    public Commit(String message,List<String> parentHashCodes,List<String> blobCodes)
+    public Commit(String message,HashSet<String> parentHashCodes,HashSet<String> blobCodes)
     {
+        this.curTime=new Date();
         this.message=message;
         this.parentHashCodes=parentHashCodes;
         this.blobCodes=blobCodes;
-        this.HashCode=generateID();
+        this.ID=generateID();
     }
 
     public String getMessage() {
         return message;
     }
 
-    public String getHashCode() {
-        return HashCode;
+    public String getID() {
+        return ID;
+    }
+
+    public HashSet<String> getParentHashCodes() {
+        return parentHashCodes;
+    }
+
+    public HashSet<String> getBlobCodes() {
+        return blobCodes;
     }
 
     public Date getCurTime() {
         return curTime;
     }
 
-    public List<String> getParentHashCodes() {
-        return parentHashCodes;
-    }
 
-    public List<String> getBlobCodes() {
-        return blobCodes;
-    }
     public void  createCommitFile() throws IOException {
-        File commit =join(COMMIT_DIR,getHashCode());
+        File commit =join(COMMIT_DIR,getID());
         writeObject(commit,this);
         commit.createNewFile();
     }
@@ -87,4 +87,6 @@ public class Commit implements Serializable {
     private String generateID(){
         return sha1(message,timeToStamp(curTime),parentHashCodes,blobCodes);
     }
+
+
 }
