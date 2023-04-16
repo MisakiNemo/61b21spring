@@ -22,6 +22,10 @@ public class Main {
                 break;
             case "add":
                 // TODO: handle the `add [filename]` command
+                if(inputChecker(2,args))
+                {
+                    Repository.add(Utils.join(Repository.CWD,args[1]));
+                }
                 break;
             // TODO: FILL THE REST IN
         }

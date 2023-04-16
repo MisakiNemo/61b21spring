@@ -52,19 +52,15 @@ public class Repository {
         branch.add(new Branch("master",initCommit.getID(),true));
         branchHash.put(initCommit.getID(),"master");
     }
-    public static void add(List<File> files) throws IOException {
-        for(File file:files)
-        {
+    public static void add(File file) throws IOException {
             if(!file.exists())
             {
                 throw new RuntimeException("File does not exist");
             }
             Blob blob=new Blob(file);
             if(AddStage.isContain(blob.getRefs())){
-                continue;
             }
             AddStage.addblob(blob.getRefs());
-        }
     }
     public static void Commit(String message) throws IOException {
         HashSet<String> blobIDs=new HashSet<>();
