@@ -32,28 +32,37 @@ public class Commit implements Serializable {
     /* TODO: fill in the rest of this class. */
     private Date curTime;
     public static final File COMMIT_DIR=join(Repository.GITLET_DIR,"Commit");
-    private HashSet<String> parentHashCodes;
+    private String parentHashCodes;
     private HashSet<String> blobCodes;
     private String timeStamp;
     public static void makeCommitDir()
     {
         COMMIT_DIR.mkdir();
     }
-    public  Commit(){
-        message="init commit";
+    public  Commit() throws IOException {
+        this.message ="init commit";
         curTime=new Date(0);
-        parentHashCodes=new HashSet<>();
-        blobCodes=new HashSet<>();
+        parentHashCodes="";
         ID=generateID();
         timeStamp=timeToStamp(curTime);
+        blobCodes=new HashSet<>();
+        this.createCommitFile();
     }
-    public Commit(String message,HashSet<String> parentHashCodes,HashSet<String> blobCodes)
+    public Commit(String message,String parentHashCodes,HashSet<String> blobCodes)
     {
         this.curTime=new Date();
         this.message=message;
         this.parentHashCodes=parentHashCodes;
         this.blobCodes=blobCodes;
         this.ID=generateID();
+    }
+
+    public String getParentHashCodes() {
+        return parentHashCodes;
+    }
+
+    public HashSet<String> getBlobCodes() {
+        return blobCodes;
     }
 
     public String getTimeStamp() {
@@ -68,13 +77,6 @@ public class Commit implements Serializable {
         return ID;
     }
 
-    public HashSet<String> getParentHashCodes() {
-        return parentHashCodes;
-    }
-
-    public HashSet<String> getBlobCodes() {
-        return blobCodes;
-    }
 
     public Date getCurTime() {
         return curTime;
@@ -91,8 +93,9 @@ public class Commit implements Serializable {
         return dateFormat.format(date);
     }
     private String generateID(){
-        return sha1(message,timeToStamp(curTime),parentHashCodes.toString(),blobCodes.toString());
+        return sha1(message,timeToStamp(curTime),parentHashCodes);
     }
+
 
 
 }

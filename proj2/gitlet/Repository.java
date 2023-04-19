@@ -31,6 +31,18 @@ public class Repository {
     public static  String HEAD;
     public static Map<String,String> branchHash=new HashMap<>();
     public static  HashSet<Branch> branch=new HashSet<>();
+    /* TODO: fill in the rest of this class. */
+    public static void init() throws IOException {
+        if(GITLET_DIR.exists())
+        {
+            throw new RuntimeException("A Gitlet version-control system already exists in the current directory.");
+        }
+        makeDir();
+        Commit initCommit=new Commit();
+        HEAD= initCommit.getID();
+        branch.add(new Branch("master",initCommit.getID(),true));
+        branchHash.put(initCommit.getID(),"master");
+    }
     private static void makeDir(){
         GITLET_DIR.mkdir();
         Commit.makeCommitDir();
@@ -39,40 +51,23 @@ public class Repository {
         AddStage.STAGE_DIR.mkdir();
         RemoveStage.STAGE_DIR.mkdir();
     }
-    /* TODO: fill in the rest of this class. */
-    public static void init() throws IOException {
-        /*if(GITLET_DIR.exists())
-        {
-            throw new RuntimeException("A Gitlet version-control system already exists in the current directory.");
-        }*/
-        makeDir();
-        Commit initCommit=new Commit();
-        initCommit.createCommitFile();
-        HEAD= initCommit.getID();
-        branch.add(new Branch("master",initCommit.getID(),true));
-        branchHash.put(initCommit.getID(),"master");
-    }
-    public static void add(File file) throws IOException {
+    public static void add(File  file) throws IOException {
             if(!file.exists())
             {
                 throw new RuntimeException("File does not exist");
             }
+            HashSet<String> strings=Helper.getCommitByID(HEAD).getBlobCodes();
             Blob blob=new Blob(file);
-            if(AddStage.isContain(blob.getRefs())){
+            if(strings.contains(blob.getID()))
+            {
+                return;
             }
             AddStage.addblob(blob.getRefs());
     }
+
     public static void Commit(String message) throws IOException {
-        HashSet<String> blobIDs=new HashSet<>();
-        blobIDs.addAll(Helper.getCommitByID(HEAD).getBlobCodes());
-        blobIDs.addAll(AddStage.getFile_IDMap().keySet());
-        Helper.cutAddBlobsToBlobDir();
-        blobIDs.removeAll(RemoveStage.getFile_IDMap().keySet());
-        RemoveStage.clear();
-        AddStage.clear();
-        HashSet<String> parentID=new HashSet<>();
-        parentID.add(HEAD);
-        Commit commit=new Commit(message,parentID,blobIDs);
+        HashSet<String> CommitBlobIDs=getCommitBlobIDs();
+        Commit commit=new Commit(message,HEAD,CommitBlobIDs);
         commit.createCommitFile();
         branchHash.put(commit.getID(),branchHash.get(HEAD));
         for(Branch brancht:branch) {
@@ -82,23 +77,49 @@ public class Repository {
         }
         HEAD=commit.getID();
     }
-    public static void  rm(List<File> files) throws IOException {
-        for(File file:files)
-        {
-            if(file.exists())
-            {
-                file.delete();
-            }
-            Blob blob=new Blob(file);
-            if(AddStage.isContain(blob.getRefs())){
-                AddStage.removeBlobFile(blob);
-            }
-            if(Helper.getCommitByID(HEAD).getBlobCodes().contains(blob.getID()))
-            {
-                RemoveStage.addblob(blob.getRefs());
-            }
-        }
+    private  static HashSet<String> getCommitBlobIDs()
+    {
+        HashSet<String> CommitBlobIDs=new HashSet<>();
+        CommitBlobIDs.addAll(Helper.getCommitByID(HEAD).getBlobCodes());
+        CommitBlobIDs.addAll(AddStage.getFile_IDMap().keySet());
+        Helper.cutAddBlobsToBlobDir();
+        CommitBlobIDs.removeAll(RemoveStage.getFile_IDMap().keySet());
+        clearStage();
+        return CommitBlobIDs;
+    }
+    private static void clearStage()
+    {
+        AddStage.clear();
+        RemoveStage.clear();
+    }
+    public static void  rm(File file) throws IOException {
+        Blob blob=new Blob(file);
+        rmInCWD(file);
+        rmInAddStage(blob);
+        rmInRemoveStage(blob);
         return;
+    }
+    public static void rmInCWD(File file)
+    {
+        if(file.exists())
+        {
+            file.delete();
+        }
+    }
+    public static void rmInAddStage(Blob blob)
+    {
+        if(AddStage.isContain(blob))
+        {
+            AddStage.removeBlobFile(blob);
+        }
+    }
+    public static void rmInRemoveStage(Blob blob)
+    {
+
+        if(RemoveStage.isContain(blob))
+        {
+            RemoveStage.removeBlobFile(blob);
+        }
     }
     public static void find(String message){
         LinkedList<Commit> commits=Helper.getAllCommit();

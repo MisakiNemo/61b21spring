@@ -39,7 +39,9 @@ public class Helper {
         }
         return  commits;
     }
-
+    public String generaterefs(File file) {
+        return Repository.CWD.toPath().relativize(file.toPath()).toString();
+    }
 
 
     //branch
@@ -56,6 +58,17 @@ public class Helper {
     {
             ArrayList<String> array=new ArrayList<>(hashset);
             return array.get(0);
+    }
+    public  static Boolean stringContain(String[] strings,String target)
+    {
+           for(String string:strings)
+           {
+               if(string.equals(target))
+               {
+                   return true;
+               }
+           }
+           return false;
     }
 
 }

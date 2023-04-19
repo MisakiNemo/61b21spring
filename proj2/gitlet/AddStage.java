@@ -13,21 +13,23 @@ public class AddStage {
     public static HashMap<String, String> getFile_IDMap() {
         return file_IDMap;
     }
-
     public static void addblob(String refs) throws IOException {
+        if(isContain(refs))
+        {
+            removeFile(refs);
+        }
         File file=join(Repository.CWD,refs);
         Blob blob=new Blob(file);
         createBlobFile(blob);
-        file_IDMap.put(blob.getID(),file.getName());
+        file_IDMap.put(blob.getID(),refs);
     }
     public static  Boolean isContain(Blob blob)
     {
-        return file_IDMap.containsKey(blob.getID());
+        return file_IDMap.containsValue(blob.getRefs());
     }
     public static  Boolean isContain(String refs )
     {
-            File file=join(Repository.CWD,refs);
-            return isContain(new Blob(file));
+        return file_IDMap.containsValue(refs);
     }
     public static void removeFile(String refs){
         if(!isContain(refs))
@@ -47,8 +49,6 @@ public class AddStage {
             file_IDMap.remove(blob.getID());
         }
         return ;
-
-
 }
     public static  void clear()
     {
@@ -60,9 +60,7 @@ public class AddStage {
         file_IDMap=new HashMap<>();
     }
     public static void createBlobFile(Blob blob) throws IOException {
-        File file=join(STAGE_DIR,blob.getID());
-        file.createNewFile();
-              return ;
+           blob.createBlobFile(STAGE_DIR);
     }
     public static  void removeBlobFile(Blob blob)
     {
@@ -76,6 +74,7 @@ public class AddStage {
         {
             file.delete();
         }
+        return ;
 
     }
 }

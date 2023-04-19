@@ -1,6 +1,7 @@
 package gitlet;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
 import static gitlet.Utils.*;
@@ -42,8 +43,12 @@ public class Blob implements Serializable {
     {
         return Repository.CWD.toPath().relativize(file.toPath()).toString();
     }
-    public void  createBlobFile()
-    {
-
+    public void  createBlobFile(File path) throws IOException {
+        File file=join(path,ID);
+        if(file.exists())
+        {
+            return;
+        }
+        file.createNewFile();
     }
 }
