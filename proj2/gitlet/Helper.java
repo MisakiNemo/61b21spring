@@ -9,16 +9,15 @@ public class Helper {
     public static void cutAddBlobsToBlobDir()
     {
         File[] files=AddStage.STAGE_DIR.listFiles();
+        if(files==null)
+        {
+            return;
+        }
         for(File file:files)
         {
             file.renameTo(Blob.BLOB_DIR);
         }
     }
-
-
-
-
-
     //Commit
     public static Commit getCommitByID(String ID)
     {

@@ -2,7 +2,10 @@ package gitlet;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
 
 import static gitlet.Utils.join;
 import static gitlet.Utils.readObject;
@@ -132,72 +135,77 @@ public class Repository {
         }
        return;
     }
-
-
     public static void log(){
-        Commit curCcommit=Helper.getCommitByID(HEAD);
-        while(!curCcommit.getParentHashCodes().isEmpty())
-        {
+              Commit commit=Helper.getCommitByID(HEAD);
+              while(!commit.getParentHashCodes().equals(""))
+              {
+                  printCommit(commit);
+                  Helper.getCommitByID(commit.getParentHashCodes());
+              }
+              printCommit(commit);
+    }
+    public static void printCommit(Commit commit){
             System.out.println("===");
-            System.out.println("commit "+curCcommit.getID());
-            String parentIDs="";
-            for(String parentID:curCcommit.getParentHashCodes())
-            {
-                parentIDs+=" "+parentID;
-            }
-            System.out.println("Merge:"+parentIDs);
-            System.out.println("Date: "+curCcommit.getTimeStamp());
-            if(curCcommit.getParentHashCodes().size()>1)
-            {
-                System.out.println("Merged development into "+branchHash.get(HEAD)+".");
-            }
-            curCcommit=Helper.getCommitByID(Helper.getHashSetFirstItem(curCcommit.getParentHashCodes()));
-        }
+            System.out.println("commit "+commit.getID());
+            System.out.println("Date: "+commit.getTimeStamp());
+            System.out.println(commit.getMessage());
+            System.out.println("");
     }
     public static void global_log(){
         File[] files=Commit.COMMIT_DIR.listFiles();
         for(File file:files)
         {
-           Commit commit=readObject(file,Commit.class);
-            System.out.println("===");
-            System.out.println("commit "+commit.getID());
-            String parentIDs="";
-            for(String parentID:commit.getParentHashCodes())
-            {
-                parentIDs+=" "+parentID;
-            }
-            System.out.println("Merge:"+parentIDs);
-            System.out.println("Date: "+commit.getTimeStamp());
-            if(commit.getParentHashCodes().size()>1)
-            {
-                System.out.println("Merged development into "+branchHash.get(HEAD)+".");
-            }
+            Commit commit=readObject(file,Commit.class);
+            printCommit(commit);
         }
     }
-
-
     public static void status()
     {
+        printBranch();
+        printStagedFile();
+        printRemoveStagedFile();
+    }
+    private static void printBranch()
+    {
         System.out.println("=== Branches ===");
-        for(Branch branch1:branch)
+        for(Branch curbranch:branch)
         {
-            if(branch1.isActive())
+            if(curbranch.isActive())
             {
-                System.out.println("*"+branch1.getName());
+                System.out.println("*"+curbranch.getName());
             }
             else{
-                System.out.println(branch1);
+                System.out.println(curbranch.getName());
             }
         }
-        System.out.println("=== Staged Files ===");
-        for(String filename:AddStage.file_IDMap.values()){
-            System.out.println(filename);
-        }
-        System.out.println("=== Removed Files ===");
-        for(String filename:RemoveStage.file_IDMap.values()){
-            System.out.println(filename);
-        }
+        System.out.println("");
     }
+    private  static  void printStagedFile()
+    {
+        System.out.println("=== Staged Files ===");
+        for(String filename:AddStage.getFile_IDMap().values())
+        {
+            System.out.println(filename);
+        }
+        System.out.println("");
+    }
+    private static  void printRemoveStagedFile()
+    {
+        System.out.println("=== Removed Files ===");
+        for(String filename:RemoveStage.getFile_IDMap().values())
+        {
+            System.out.println(filename);
+        }
+        System.out.println("");
+    }
+    /*private static void printModificationsFiles()
+    {
+
+    }
+    private static void printUntrackedFiles()
+    {
+
+    }*/
     public static void branch(String name)
     {
         Branch newBranch=new Branch(name,Helper.getCommitByID(HEAD).getID(),false);
