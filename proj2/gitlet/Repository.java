@@ -7,8 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static gitlet.Utils.join;
-import static gitlet.Utils.readObject;
+import static gitlet.Utils.*;
 
 // TODO: any imports you need here
 
@@ -118,7 +117,6 @@ public class Repository {
     }
     public static void rmInRemoveStage(Blob blob)
     {
-
         if(RemoveStage.isContain(blob))
         {
             RemoveStage.removeBlobFile(blob);
@@ -208,29 +206,76 @@ public class Repository {
     }*/
     public static void branch(String name)
     {
+        if(checkBranch(name))
+        {
+            throw new RuntimeException("A branch with that name already exists.");
+        }
         Branch newBranch=new Branch(name,Helper.getCommitByID(HEAD).getID(),false);
         branch.add(newBranch);
         return ;
     }
+    private static Boolean checkBranch(String name)
+    {
+        for(Branch curbranch:branch)
+        {
+            if(curbranch.getName().equals(name))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public static void rm_branch(String name)
     {
-         for(Branch branch1:branch)
-         {
-             if(branch1.getName()==name)
-             {
-                 branch.remove(branch1);
-                 return;
-             }
-         }
+            for(Branch curbranch:branch)
+            {
+                if(curbranch.getName().equals(name))
+                {
+                    branch.remove(curbranch);
+                    return;
+                }
+            }
+            throw new RuntimeException("A branch with that name does not exist.");
     }
-    public static void checkout(String name)
+    public static void Firstcheckout(String name)
+    {
+        checkout(HEAD,name);
+    }
+    public static void checkout(String CommitID,String name)
     {
 
-
+        Commit commit=Helper.getCommitByID(CommitID);
+        commit.getBlobCodes();
+        File[] files=Blob.BLOB_DIR.listFiles();
+        for(File file:files)
+        {
+            String refs=readObject(file,Blob.class).getRefs();
+            Blob blob=new Blob(join(CWD,name));
+            if(refs.equals(blob.getRefs()))
+            {
+                writeContents(file,blob.getContent());
+                return;
+            }
+        }
     }
+    public static void  CheckoutBranch(String branchName)
+    {
+        if(branchName.equals(HEAD))
+        {
+            System.out.println("No need to checkout the current branch.");
+        }
+        for(Branch curbranch:branch)
+        {
+            if (curbranch.getName().equals(branchName)) {
+
+                  }
+              }
+        System.out.println("No such branch exists.");
+    }
+    private static void check
     public static  void reset(){
     }
-    public static void merge(){
-
+    public static void merge() {
     }
+
 }
