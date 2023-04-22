@@ -272,7 +272,6 @@ public class Repository {
               }
         System.out.println("No such branch exists.");
     }
-    private static void check
     public static  void reset(){
     }
     public static void merge() {
